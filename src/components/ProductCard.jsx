@@ -1,23 +1,28 @@
 import React, { useState } from "react";
-import { useCart } from "../context/CartContext";
+import { useSelector, useDispatch } from "react-redux";
+import { addToCart, updateCartItem } from "../store/cartSlice";
 import WishlistButton from "./WishlistButton";
 
 const ProductCard = ({ product }) => {
-  const [quantity, setQuantity] = useState(0);
-  const [isAdded, setIsAdded] = useState(false);
-  const { addToCart, updateCartItem } = useCart();
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
+  const cartItem = cartItems.find((item) => item.id === product.id);
+  const [quantity, setQuantity] = useState(cartItem?.quantity || 0);
+  const [isAdded, setIsAdded] = useState(!!cartItem);
 
   const handleAddToCart = () => {
     setIsAdded(true);
     setQuantity(1);
-    addToCart(product, 1);
+    dispatch(addToCart({ product, quantity: 1 }));
   };
 
   const handleIncrease = () => {
     if (quantity < product.stock) {
       const newQuantity = quantity + 1;
       setQuantity(newQuantity);
-      updateCartItem(product.id, newQuantity);
+      dispatch(
+        updateCartItem({ productId: product.id, quantity: newQuantity })
+      );
     }
   };
 
@@ -25,7 +30,9 @@ const ProductCard = ({ product }) => {
     if (quantity > 0) {
       const newQuantity = quantity - 1;
       setQuantity(newQuantity);
-      updateCartItem(product.id, newQuantity);
+      dispatch(
+        updateCartItem({ productId: product.id, quantity: newQuantity })
+      );
 
       if (newQuantity === 0) {
         setIsAdded(false);

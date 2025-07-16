@@ -1,12 +1,11 @@
 import React from "react";
-import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext";
+import { useSelector } from "react-redux";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const { totalItems = 0 } = useCart?.() || {};
-  const { wishlist = [] } = useWishlist?.() || {};
+  const { items: wishlist } = useSelector((state) => state.wishlist);
+  const { totalItems } = useSelector((state) => state.cart);
   const { user, logout } = useAuth?.() || {};
 
   return (

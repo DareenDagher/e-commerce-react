@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useCart } from "../context/CartContext";
+import { useSelector, useDispatch } from "react-redux";
+import { addToCart, updateCartItem } from "../store/cartSlice";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { addToCart, updateCartItem, cartItems } = useCart();
-
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
   const cartItem = cartItems.find((item) => item.id === parseInt(id));
   const [quantity, setQuantity] = useState(cartItem?.quantity || 0);
 
@@ -29,14 +30,16 @@ const ProductDetails = () => {
 
   const handleAddToCart = () => {
     setQuantity(1);
-    addToCart(product, 1);
+    dispatch(addToCart({ product, quantity: 1 }));
   };
 
   const handleIncrease = () => {
     if (quantity < product.stock) {
       const newQuantity = quantity + 1;
       setQuantity(newQuantity);
-      updateCartItem(product.id, newQuantity);
+      dispatch(
+        updateCartItem({ productId: product.id, quantity: newQuantity })
+      );
     }
   };
 
@@ -44,7 +47,9 @@ const ProductDetails = () => {
     if (quantity > 0) {
       const newQuantity = quantity - 1;
       setQuantity(newQuantity);
-      updateCartItem(product.id, newQuantity);
+      dispatch(
+        updateCartItem({ productId: product.id, quantity: newQuantity })
+      );
     }
   };
 

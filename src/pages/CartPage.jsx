@@ -1,22 +1,24 @@
 import React from "react";
-import { useCart } from "../context/CartContext";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { updateCartItem } from "../store/cartSlice";
 
 const CartPage = () => {
-  const { cartItems, updateCartItem, totalItems } = useCart();
+  const { items: cartItems, totalItems } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleIncrease = (productId, currentQuantity, stock) => {
     if (currentQuantity < stock) {
-      updateCartItem(productId, currentQuantity + 1);
+      dispatch(updateCartItem({ productId, quantity: currentQuantity + 1 }));
     }
   };
 
   const handleDecrease = (productId, currentQuantity) => {
     if (currentQuantity > 1) {
-      updateCartItem(productId, currentQuantity - 1);
+      dispatch(updateCartItem({ productId, quantity: currentQuantity - 1 }));
     } else {
-      updateCartItem(productId, 0);
+      dispatch(updateCartItem({ productId, quantity: 0 }));
     }
   };
 

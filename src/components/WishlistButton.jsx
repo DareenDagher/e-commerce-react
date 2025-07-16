@@ -1,22 +1,25 @@
-import React, { useState } from "react";
-import { useWishlist } from "../context/WishlistContext";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { addToWishlist, removeFromWishlist } from "../store/wishlistSlice";
 
 const WishlistButton = ({ product }) => {
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const [isWishlisted, setIsWishlisted] = useState(isInWishlist(product.id));
+  const dispatch = useDispatch();
+  const { items } = useSelector((state) => state.wishlist);
+  const isWishlisted = items.some((item) => item.id === product.id);
 
   const handleWishlist = () => {
     if (isWishlisted) {
-      removeFromWishlist(product.id);
+      dispatch(removeFromWishlist(product.id));
     } else {
-      addToWishlist(product);
+      dispatch(addToWishlist(product));
     }
-    setIsWishlisted(!isWishlisted);
   };
 
   return (
     <button
-      className={`btn ${isWishlisted ? "btn-danger" : "btn-outline-danger"}`}
+      className={`btn ${
+        isWishlisted ? "btn-danger" : "btn-outline-danger"
+      } w-100`}
       onClick={handleWishlist}
     >
       {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}

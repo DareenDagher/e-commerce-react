@@ -1,9 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useWishlist } from "../context/WishlistContext";
+import { useSelector, useDispatch } from "react-redux";
+import { removeFromWishlist } from "../store/wishlistSlice";
 
 const WishlistPage = () => {
-  const { wishlist, removeFromWishlist } = useWishlist();
+  const dispatch = useDispatch();
+  const { items: wishlist } = useSelector((state) => state.wishlist);
 
   if (wishlist.length === 0) {
     return (
@@ -40,7 +42,7 @@ const WishlistPage = () => {
                     View Details
                   </Link>
                   <button
-                    onClick={() => removeFromWishlist(product.id)}
+                    onClick={() => dispatch(removeFromWishlist(product.id))}
                     className="btn btn-outline-danger"
                   >
                     Remove
