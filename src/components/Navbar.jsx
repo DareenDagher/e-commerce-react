@@ -1,12 +1,20 @@
 import React from "react";
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
+import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
+  const { totalItems = 0 } = useCart?.() || {};
+  const { wishlist = [] } = useWishlist?.() || {};
+  const { user, logout } = useAuth?.() || {};
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
       <div className="container">
-        <a className="navbar-brand" href="#">
+        <Link className="navbar-brand" to="/">
           E-Commerce
-        </a>
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -16,23 +24,50 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
+          <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <a className="nav-link active" href="#">
+              <Link className="nav-link active" to="/">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">
-                Products
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#">
-                Cart
-              </a>
+              <Link className="nav-link" to="/wishlist">
+                Wishlist ({wishlist.length})
+              </Link>
             </li>
           </ul>
+          <div className="d-flex align-items-center">
+            <Link
+              to="/cart"
+              className="btn btn-outline-light position-relative me-3"
+            >
+              Cart
+              {totalItems > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+            {user ? (
+              <>
+                <span className="text-light me-3">
+                  Welcome, {user.username}
+                </span>
+                <button onClick={logout} className="btn btn-outline-light me-2">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-outline-light me-2">
+                  Login
+                </Link>
+                <Link to="/register" className="btn btn-primary">
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>
